@@ -1,24 +1,53 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+
+import Navbar from './components/Navbar';
+import Home from './components/Home';
+import CourseFinder from './components/CourseFinder';
+import FavoritesPage from './components/FavoritesPage';
+import Help from './components/Help';
 
 function App() {
+  // Pull favorites up so both pages can share them
+  const [favorites, setFavorites] = useState([]);
+
+  const toggleFavorite = (course) => {
+    setFavorites(prev =>
+      prev.some(f => f.id === course.id)
+        ? prev.filter(f => f.id !== course.id)
+        : [...prev, course]
+    );
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Navbar />
+      <div className="p-4">
+        <Routes>
+          <Route path="/" element={<Home />} />
+
+          <Route
+            path="/finder"
+            element={
+              <CourseFinder
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+              />
+            }
+          />
+
+          <Route
+            path="/favorites"
+            element={<FavoritesPage favorites={favorites} />}
+          />
+
+          <Route path="/help" element={<Help />} />
+
+          {/* Redirect any unknown URL back to home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
+    </>
   );
 }
 
